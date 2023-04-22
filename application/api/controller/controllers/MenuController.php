@@ -96,7 +96,6 @@ class MenuController extends Api
         $currentPage = $postData['currentPage'];
         $model = new Menu();
         $res = $model->getMenuList($map, $currentPage, $pageSize);
-
         // 查询二级菜单
         $secMenuList = $this->secMenu($res['data']['records']);
         // 获取按钮
@@ -138,6 +137,8 @@ class MenuController extends Api
             $senMenu = array();
             foreach ($secMenuList as $v) {
                 if ($item['id'] == $v['fid']) {
+                    $v['ftitle'] = $item['title'];
+                    $v['fname'] = $item['name'];
                     array_push($senMenu, $v);
                 }
             }

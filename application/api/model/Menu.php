@@ -28,9 +28,10 @@ class Menu extends Model
         return resultFormat($dataList, $currentPage, $pages, $pageSize, $total);
     }
 
-    public function getAllMenu($map){
-        $menuList =  Db::table('menu')->where($map)->order('menuOrder desc,id asc')->select();
-        foreach ($menuList as $key=>$value){
+    public function getAllMenu($map)
+    {
+        $menuList = Db::table('menu')->where($map)->order('menuOrder desc,id asc')->select();
+        foreach ($menuList as $key => $value) {
             $menuList[$key]['children'] = null;
             $menuList[$key]['fname'] = null;
             $menuList[$key]['ftitle'] = null;
@@ -64,19 +65,21 @@ class Menu extends Model
      * 插入按钮
      * @param $postData
      */
-    public function insertBtn($postData){
+    public function insertBtn($postData)
+    {
         //$data['id'] = Snowflake::generateParticle();
 //        $data['menuId'] = $postData['menuId'];
 //        $data['type'] = $postData['type'];
 //        $data['name'] = $postData['name'];
 //        $this->table('menubutton')->data($data)->save($data);
-       // return Db::name('menubutton')->data($data)->save();
+        // return Db::name('menubutton')->data($data)->save();
 
     }
 
-    public function menudeleteBtndel($menuId){
-        $this->where("id=".$menuId)->delete();
-        $this->name("menubutton")->where("menuId=".$menuId)->delete();
+    public function menudeleteBtndel($menuId)
+    {
+        $this->where("id=" . $menuId)->delete();
+        $this->name("menubutton")->where("menuId=" . $menuId)->delete();
     }
 
 }

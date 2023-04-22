@@ -47,7 +47,7 @@ class Login extends Controller
         $captcha->fontSize = 14;
         $captcha->imageW = 95;
         $captcha->imageH = 25;
-        $captcha->length = 1; // 验证码位数
+        $captcha->length = 4; // 验证码位数
         $captcha->useNoise = false;
         return $captcha->entry();
     }
@@ -117,6 +117,11 @@ class Login extends Controller
         $resUser = get_object_vars($res); // 讲数组转成数组
         $User = new LoginModel();
         $userInfo = $User->findUserById($resUser['id']);
+        if (empty($userInfo)) {
+            $navData["data"] = array("menusList" => []);
+           return $this->sendSuccess($navData, '登录成功!');
+        }
+
         // 查询菜单
         $menuBtnList = $this->getMenuList($userInfo['roleId']);
         $userInfo['menusList'] = $menuBtnList;
@@ -170,7 +175,8 @@ class Login extends Controller
     /**
      * 退出登录
      */
-    public function logout(){
+    public function logout()
+    {
         return $this->sendSuccess([], '退出成功!');
     }
 

@@ -8,6 +8,8 @@ use app\api\controller\Api;
 
 use app\api\controller\Oauth;
 use app\api\model\User;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use think\Db;
 use think\Model;
 use think\Request;
@@ -21,6 +23,7 @@ use think\Request;
 class UserController extends Api
 {
     private $postData;
+    private $jwtKey = 'jwtKey';
 
     public function __construct(Request $request = null)
     {
@@ -123,5 +126,25 @@ class UserController extends Api
         $postData["password"] = md5($postData["password"]);
         $model->data($postData)->isUpdate(true)->save();
         return $this->sendSuccess("ok");
+    }
+
+    /**
+     * 修改头像
+     */
+    public function setUserAvatar()
+    {
+        $oauch = new Oauth();
+        $currentInfo = $oauch->getCurrentInfo();
+
+        try {
+            $map = array();
+            $user = new User();
+            $data['avatar'] = $this->postData['avatar'];
+            $data['id'] = $currentInfo['id'];
+            $res = $user->isUpdate(true)->data($data)->save();
+            return $this->sendSuccess($res, '登录成功!');
+        } catch (Exception $e) {
+            return $this->sendError('token过期了!');
+        }
     }
 }
