@@ -140,7 +140,7 @@ class Login extends Controller
         foreach ($roleMenuList as $key => $value) {
             array_push($menuIds, $value['menuId']);
         }
-        $menuList = Db::table('menu')->order("menuOrder desc")->whereIn('id', $menuIds)->select();
+        $menuList = Db::table('menu')->order("menuOrder desc, id asc")->whereIn('id', $menuIds)->select();
 
         // 获取按钮列表
         $menuButtonList = Db::table('rolebuttons')->where("roleId = " . $roleId)->select();

@@ -39,7 +39,7 @@ class ProductClassController extends Api
     }
 
     /**
-     * 列表
+     * 分类列表
      */
 
     public function dataList()
@@ -64,11 +64,11 @@ class ProductClassController extends Api
         $model = new ProductClass();
         // 查询自身信息
         $info = Db::table('productclass')->where("classid=" . $postData["classid"])->find();
-
-        if ($info["classid"] == $postData["rootid"]) {
+        if ($info["rootid"] == $postData["rootid"]  ) {
             //没有修改分类
             $res = $model->isUpdate(true)->data($postData)->save();
         } else {
+
             // 修改了分类
             // 当前分类列表
             $sql = "SELECT

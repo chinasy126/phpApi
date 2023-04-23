@@ -15,7 +15,7 @@ class ProductClass extends Model
 //    ];
     public function getDataList($map, $currentPage, $pageSize)
     {
-        $dataList = $this->where($map)->limit($pageSize)->page($currentPage)->order("classpower asc")->select();
+        $dataList = $this->where($map)->limit($pageSize)->page($currentPage)->order("classpower asc,classid asc")->select();
         $total = $this->where($map)->count();
         $pages = ceil($total / $pageSize);
         return resultFormat($dataList, $currentPage, $pages, $pageSize, $total);
