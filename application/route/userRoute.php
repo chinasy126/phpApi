@@ -4,6 +4,7 @@ use think\Route;
 
 Route::post('user/logout','api/controllers.Login/logout');
 Route::post('user/list', 'api/controllers.UserController/userList');
+Route::post('user/insertOrUpdate', 'api/controllers.UserController/insertOrUpdate');
 Route::post('user/insert', 'api/controllers.UserController/userInsert');
 Route::delete('user/delete', 'api/controllers.UserController/userDelete');
 

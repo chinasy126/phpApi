@@ -26,9 +26,9 @@ class User extends Model
         $roleList = $this->getRoleNameList($dataList);
         foreach ($dataList as $key => $value) {
             foreach ($roleList as $k => $v) {
-               if($value["roleId"] == $v["id"]){
-                   $dataList[$key]["roleName"] = $v["roleName"];
-               }
+                if ($value["roleId"] == $v["id"]) {
+                    $dataList[$key]["roleName"] = $v["roleName"];
+                }
             }
         }
 
@@ -46,5 +46,14 @@ class User extends Model
         return Db::name("role")->where($where)->select();
     }
 
+    public function insertUser(array $userData = [])
+    {
+        return Db::table($this->table)->data($userData)->insert();
+    }
+
+    public function updateUser(array $userData = [])
+    {
+        return Db::table($this->table)->where("id=" . $userData['id'])->data($userData)->update();
+    }
 
 }

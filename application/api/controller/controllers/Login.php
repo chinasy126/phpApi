@@ -45,10 +45,11 @@ class Login extends Controller
     {
         $captcha = new Captcha();
         $captcha->fontSize = 14;
-        $captcha->imageW = 95;
-        $captcha->imageH = 25;
+//        $captcha->imageW = 95;
+//        $captcha->imageH = 25;
         $captcha->length = 4; // 验证码位数
         $captcha->useNoise = false;
+        $captcha->useCurve = false;
         return $captcha->entry();
     }
 
@@ -113,7 +114,7 @@ class Login extends Controller
     public function nav()
     {
         $header = getallheaders();
-        $res = JWT::decode($header['x-token'], new Key($this->jwtKey, 'HS256')); // 获取ID
+        $res = JWT::decode($header['X-Token'], new Key($this->jwtKey, 'HS256')); // 获取ID
         $resUser = get_object_vars($res); // 讲数组转成数组
         $User = new LoginModel();
         $userInfo = $User->findUserById($resUser['id']);

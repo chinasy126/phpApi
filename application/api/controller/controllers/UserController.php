@@ -31,6 +31,30 @@ class UserController extends Api
         $this->postData = $this->request->param();
     }
 
+    public function insertOrUpdate()
+    {
+        $postData = $this->request->param();
+        if (!empty($postData['password'])) {
+            $postData['password'] = md5($postData['password']);
+        }
+        $user = new User();
+         if (!empty($postData['id'])) {
+            // 修改
+            $res = $user->updateUser($postData);
+            return $this->sendSuccess($res);
+        } else {
+            // 新增
+
+            $res = Db::table('t_user')->where("username='".$postData['username']."'")->find();
+            if (!empty($res)) {
+                return $this->sendError("用户名已存在!");
+            }
+            $res = $user->insertUser($postData);
+            return $this->sendSuccess($res);
+        }
+
+    }
+
     /**
      * 用户列表
      */

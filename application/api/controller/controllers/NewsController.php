@@ -75,16 +75,19 @@ class NewsController extends Api
     public function exportNews()
     {
         $map = $this->postData;
-        $list = Db::table('news')->whereIn('id', implode(',', $map['id']))
-            ->field('title, fTitle, pic, contents, num, top,author,webtitle,webkey,webdes')
-            ->select();
+        if (!empty($map['id'])) {
+            $list = Db::table('news')->whereIn('id', implode(',', $map['id']))
+                ->field('title, fTitle, pic, contents, num, top,author,webtitle,webkey,webdes')
+                ->select();
+        } else {
+            $list = Db::table('news')->
+            field('title, fTitle, pic, contents, num, top,author,webtitle,webkey,webdes')
+                ->select();
+        }
 
 //        // Create a new Excel workbook
         $objPHPExcel = new PHPExcel();
-
         $abcedf = abcdefg();
-
-
         $objPHPExcel->getActiveSheet()->setCellValue('A1', '标题');
         $objPHPExcel->getActiveSheet()->setCellValue('B1', '副标题');
         $objPHPExcel->getActiveSheet()->setCellValue('C1', '图片');
@@ -119,7 +122,7 @@ class NewsController extends Api
         // Create a PHPExcel Writer object and send the output to the client
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
-        exit;
+//        exit;
     }
 
     /**
@@ -163,11 +166,12 @@ class NewsController extends Api
         return $this->sendSuccess('ok');
     }
 
-    public function newsBatchDelete(){
+    public function newsBatchDelete()
+    {
         $postData = $this->request->param();
-        if(!empty($postData["id"])  && count($postData["id"]) > 0 ){
+        if (!empty($postData["id"]) && count($postData["id"]) > 0) {
             $map = array();
-            $map["id"] = array("in",$postData["id"]);
+            $map["id"] = array("in", $postData["id"]);
             Db::name("news")->where($map)->delete();
         }
         return $this->sendSuccess("ok");
