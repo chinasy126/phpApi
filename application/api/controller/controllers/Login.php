@@ -134,7 +134,7 @@ class Login extends Controller
     /**
      * 获取菜单
      */
-    public function getMenuList($roleId): array
+    public function getMenuList($roleId)
     {
         $roleMenuList = Db::table('rolemenus')->where('roleId = ' . $roleId)->select();
         $menuIds = [];
