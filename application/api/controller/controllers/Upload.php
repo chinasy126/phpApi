@@ -1,21 +1,52 @@
 <?php
-
 namespace app\api\controller\controllers;
 
-
 use app\api\controller\Api;
-
+use Qiniu\Auth;
+use Qiniu\Storage\UploadManager;
 use think\Db;
-
 use think\Loader;
-
+use think\Config;
 
 
 class Upload extends Api
 {
+
+    private $accessKey;
+    private $secretKey;
+    private $bucket;
+    private $domain;
+
+    public function uploadFile_()
+    {
+        // 引用配置文件
+        $configArray = config(include 'application/config/qiniu.php');
+        $this->accessKey = $configArray["access_key"];
+        $this->secretKey = $configArray["secret_key"];
+        $this->bucket = $configArray["bucket"];
+        $this->domain = $configArray["domain"];
+
+        $file = request()->file('file');  // 通过表单上传的图片字段名
+        $filePath = $file->getRealPath();
+
+        $auth = new Auth($this->accessKey, $this->secretKey);
+        $token = $auth->uploadToken($this->bucket);
+        $uploadManager = new UploadManager();
+        list($ret, $err) = $uploadManager->putFile($token, null, $filePath);
+
+        if ($err !== null) {
+            // 上传失败
+            return $this->sendError($err->message());
+        } else {
+            $imageUrl = $auth->privateDownloadUrl($this->domain . $ret["key"]);
+            return $this->sendSuccess(
+                array("file" => $imageUrl)
+            );
+        }
+    }
+
     public function uploadFile()
     {
-
         $file = request()->file('file');
         // 移动到框架应用根目录/public/uploads/ 目录下
         if ($file) {
@@ -24,7 +55,7 @@ class Upload extends Api
                 $result = "/public/uploads/" . $info->getSaveName();
                 $result = str_replace('\\', "/", $result);
                 return $this->sendSuccess(
-                    array("file"=>$result)
+                    array("file" => $result)
                 );
             } else {
                 // 上传失败获取错误信息
@@ -64,7 +95,8 @@ class Upload extends Api
     /*
      * 插入数据
      */
-    public function insertData($file_path){
+    public function insertData($file_path)
+    {
         Loader::import('PHPExcel.PHPExcel');
         Loader::import('PHPExcel.PHPExcel.PHPExcel_IOFactory');
         Loader::import('PHPExcel.PHPExcel.PHPExcel_Cell');
@@ -74,16 +106,16 @@ class Upload extends Api
         // $objReader = \PHPExcel_IOFactory::createReader('Excel5');
         // 根据扩展名后缀判断。
 
-        $array = explode('.',$file_path);
-        if($array[1] == 'xlsx'){
+        $array = explode('.', $file_path);
+        if ($array[1] == 'xlsx') {
             $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
-        }else{
+        } else {
             $objReader = \PHPExcel_IOFactory::createReader('Excel5');
         }
 
         //$file_path = ROOT_PATH.'public/uploads/excel/20210808/78a35e7abffb36640c7c4fa72d054d15.xlsx';
 
-        $objData = $objReader->load(ROOT_PATH.$file_path);
+        $objData = $objReader->load(ROOT_PATH . $file_path);
         $excel_array = $objData->getSheet(0)->toArray(); // 需要删除第一行
         unset($excel_array[0]);
 
@@ -93,7 +125,7 @@ class Upload extends Api
         $adminName = $this->request->param('adminName');
 
         foreach ($excel_array as $key => $value) {
-            if(!empty($value[0]) && !empty($value[2]) && !empty($value[2]) && !empty($value[3])){
+            if (!empty($value[0]) && !empty($value[2]) && !empty($value[2]) && !empty($value[3])) {
                 $insertData[$num] ['adminId'] = $adminId;
                 $insertData[$num] ['adminName'] = $adminName;
                 $insertData[$num]['type'] = $value[0];// 车型
@@ -113,11 +145,10 @@ class Upload extends Api
      */
     function getExt($url)
     {
-        $path=parse_url($url);
-        $str=explode('.',$path['path']);
+        $path = parse_url($url);
+        $str = explode('.', $path['path']);
         return $str[1];
     }
-
 
 
 }

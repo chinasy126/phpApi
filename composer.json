@@ -2,6 +2,8 @@
     "require": {
         "topthink/think-captcha": "1.",
         "firebase/php-jwt": "^6.4",
-        "phpoffice/phpexcel": "^1.8"
+        "phpoffice/phpexcel": "^1.8",
+        "phpoffice/phpspreadsheet": "^1.25",
+        "qiniu/php-sdk": "^7.12"
     }
 }

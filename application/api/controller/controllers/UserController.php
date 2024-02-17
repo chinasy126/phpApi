@@ -38,14 +38,14 @@ class UserController extends Api
             $postData['password'] = md5($postData['password']);
         }
         $user = new User();
-         if (!empty($postData['id'])) {
+        if (!empty($postData['id'])) {
             // 修改
             $res = $user->updateUser($postData);
             return $this->sendSuccess($res);
         } else {
             // 新增
 
-            $res = Db::table('t_user')->where("username='".$postData['username']."'")->find();
+            $res = Db::table('t_user')->where("username='" . $postData['username'] . "'")->find();
             if (!empty($res)) {
                 return $this->sendError("用户名已存在!");
             }
@@ -77,7 +77,7 @@ class UserController extends Api
         $postData = $this->request->param();
         $postData["password"] = md5($postData["password"]);
         $model = new User();
-        $res = Db::name("t_user")->where("username='" . $postData["username"] . "'")->select();
+        $res = Db::name("t_user")->where("username", $postData["username"])->select();
         if (!empty($res)) {
             return $this->sendError("用户名已存在!");
         }

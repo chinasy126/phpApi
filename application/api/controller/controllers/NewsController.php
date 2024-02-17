@@ -14,6 +14,10 @@ use PHPExcel;
 use PHPExcel_IOFactory;
 use PHPExcel_Style_Alignment;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+
 /**
  * Class Admin
  * @package app\api\controller\v1
@@ -85,44 +89,43 @@ class NewsController extends Api
                 ->select();
         }
 
-//        // Create a new Excel workbook
-        $objPHPExcel = new PHPExcel();
-        $abcedf = abcdefg();
-        $objPHPExcel->getActiveSheet()->setCellValue('A1', '标题');
-        $objPHPExcel->getActiveSheet()->setCellValue('B1', '副标题');
-        $objPHPExcel->getActiveSheet()->setCellValue('C1', '图片');
-        $objPHPExcel->getActiveSheet()->setCellValue('D1', '内容');
-        $objPHPExcel->getActiveSheet()->setCellValue('E1', '点击数');
-        $objPHPExcel->getActiveSheet()->setCellValue('F1', '推荐值');
-        $objPHPExcel->getActiveSheet()->setCellValue('G1', '作者');
-        $objPHPExcel->getActiveSheet()->setCellValue('H1', '网页标题');
-        $objPHPExcel->getActiveSheet()->setCellValue('I1', '网页关键词');
-        $objPHPExcel->getActiveSheet()->setCellValue('J1', '网页描述');
+        // 创建一个新的Excel对象
+        $spreadsheet = new Spreadsheet();
 
-        foreach ($list as $key => $value) {
-            $num = $key + 2;
-            $objPHPExcel->getActiveSheet()->setCellValue('A' . $num, $value['title']);
-            $objPHPExcel->getActiveSheet()->setCellValue('B' . $num, $value['fTitle']);
-            $objPHPExcel->getActiveSheet()->setCellValue('C' . $num, $value['pic']);
-            $objPHPExcel->getActiveSheet()->setCellValue('D' . $num, $value['contents']);
-            $objPHPExcel->getActiveSheet()->setCellValue('E' . $num, $value['num']);
-            $objPHPExcel->getActiveSheet()->setCellValue('F' . $num, $value['top']);
-            $objPHPExcel->getActiveSheet()->setCellValue('G' . $num, $value['author']);
-            $objPHPExcel->getActiveSheet()->setCellValue('H' . $num, $value['webtitle']);
-            $objPHPExcel->getActiveSheet()->setCellValue('I' . $num, $value['webkey']);
-            $objPHPExcel->getActiveSheet()->setCellValue('J' . $num, $value['webdes']);
+        // 获取当前活动的sheet
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // 在第一行设置标题
+        $sheet->setCellValue('A1', '标题');
+        $sheet->setCellValue('B1', '副标题');
+        $sheet->setCellValue('C1', '图片');
+        $sheet->setCellValue('D1', '内容');
+        $sheet->setCellValue('E1', '点击数');
+        $sheet->setCellValue('F1', '推荐值');
+        $sheet->setCellValue('G1', '作者');
+        $sheet->setCellValue('H1', '网页标题');
+        $sheet->setCellValue('I1', '网页关键词');
+        $sheet->setCellValue('J1', '网页描述');
+
+        // 填充数据
+        $row = 2;
+        foreach ($list as $row_data) {
+            $sheet->fromArray($row_data, null, 'A' . $row);
+            $row++;
         }
 
-        // Set the response headers
-        $filename = 'example.xlsx';
+        // 设置文件名
+        $filename = 'fileName.xlsx';
+        // 创建Excel文件
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filename);
+
+        // 下载文件
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
 
-        // Create a PHPExcel Writer object and send the output to the client
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
-//        exit;
+        $writer->save('php://output');
     }
 
     /**
